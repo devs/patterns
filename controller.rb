@@ -2,9 +2,15 @@ require "active_record"
 require "filters"
 require "erb"
 
-class Controller
+class ControllerBase
   attr_accessor :request, :response
-  
+
+  def process(action)
+    send action
+  end
+end
+
+class Controller < ControllerBase
   include Filters
   
   def render(action)

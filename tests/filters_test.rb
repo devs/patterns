@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/test_helper'
 require "controller"
 
 class TestController < Controller
-  around_filter :around1
-  around_filter :around2
   before_filter :one
+  around_filter :around1
   before_filter :two
   after_filter :three
+  around_filter :around2
   
   def initialize(out)
     @out = out
@@ -35,6 +35,10 @@ class TestController < Controller
     yield
     @out << "]"
   end
+
+  def index
+    @out << :index
+  end
 end
 
 class FiltersTest < Test::Unit::TestCase
@@ -46,9 +50,7 @@ class FiltersTest < Test::Unit::TestCase
   
   def test_filter
     out = []
-    TestController.new(out).filter do
-      out << :process
-    end
-    assert_equal ["{", "[", :one, :two, :process, :three, "]", "}"], out
+    TestController.new(out).process :index
+    assert_equal [:one, "{", :two, "[", :index, "]", :three, "}"], out
   end
 end
